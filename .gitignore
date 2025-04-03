@@ -1,0 +1,16 @@
+# Node.js modules
+node_modules/
+
+# Fichiers d'environnement
+.env
+
+# Logs
+logs/
+*.log
+
+# Système
+.DS_Store
+Thumbs.db
+
+# Dépendances natives
+*.node

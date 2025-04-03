@@ -18,16 +18,33 @@ exports.getAllProduits = async (req, res) => {
 
 exports.getProduitById = async (req, res) => {
     try {
+     
+        const id = req.params.id;
+
+        if (isNaN(id)) {
+            return res.status(400).render('error', { error: 'ID invalide.' });
+        }
+
+        
         const produit = await sequelize.query(
             `SELECT p.*, c.nom AS categorieNom FROM produits p 
              LEFT JOIN categories c ON p.categorieId = c.id 
              WHERE p.id = ?`,
-            { replacements: [req.params.id], type: sequelize.QueryTypes.SELECT }
+            {
+                replacements: [id], 
+                type: sequelize.QueryTypes.SELECT,
+            }
         );
-        if (produit.length === 0) return res.status(404).render('error', { error: 'Produit non trouvé.' });
+
+     
+        if (produit.length === 0) {
+            return res.status(404).render('error', { error: 'Produit non trouvé.' });
+        }
+
      
         res.render('products/details', { product: produit[0] });
     } catch (error) {
+        console.error('Erreur lors de la récupération du produit :', error);
         res.status(500).render('error', { error: 'Erreur serveur lors du chargement du produit.' });
     }
 };

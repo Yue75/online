@@ -14,14 +14,30 @@ exports.getAllCategories = async (req, res) => {
 
 exports.getCategorieById = async (req, res) => {
     try {
-        const categorie = await sequelize.query('SELECT * FROM categories WHERE id = ?', {
-            replacements: [req.params.id],
-            type: sequelize.QueryTypes.SELECT,
-        });
-        if (categorie.length === 0) return res.status(404).render('error', { error: 'Catégorie non trouvée.' });
-  
+        const id = req.params.id;
+
+   
+        if (isNaN(id)) {
+            return res.status(400).render('error', { error: 'ID invalide.' });
+        }
+
+        const categorie = await sequelize.query(
+            `SELECT * FROM categories WHERE id = ?`,
+            {
+                replacements: [id],
+                type: sequelize.QueryTypes.SELECT,
+            }
+        );
+
+       
+        if (categorie.length === 0) {
+            return res.status(404).render('error', { error: 'Catégorie non trouvée.' });
+        }
+
+    
         res.render('categories/details', { categorie: categorie[0] });
     } catch (error) {
+        console.error('Erreur détectée :', error);
         res.status(500).render('error', { error: 'Erreur serveur lors du chargement de la catégorie.' });
     }
 };
