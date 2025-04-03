@@ -4,10 +4,11 @@ const sequelize = require('./config/database');
 
 const categoryRoutes = require('./routes/categoryRoutes'); 
 const productRoutes = require('./routes/productRoutes'); 
+const userRoutes = require('./routes/userRoutes'); 
 
 const app = express();
 
-// Configuration du moteur de vues
+
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 
@@ -15,26 +16,30 @@ app.set('views', __dirname + '/views');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Routes statiques (fichiers CSS, JS, images, etc.)
+
 app.use(express.static('public'));
 
-// Route principale (menu de navigation)
+
 app.get('/', (req, res) => {
-  res.render('home'); // Affiche la page d'accueil
+  res.render('home'); 
 });
 
-// Routes pour les catégories
 app.use('/categories', categoryRoutes);
 
-// Routes pour les produits
 app.use('/produits', productRoutes);
 
-// Synchronisation de la base de données
-sequelize.sync({ force: false }) // Ne réinitialise pas les données à chaque lancement
+app.use('/users', userRoutes); 
+
+
+sequelize.sync({ force: false }) 
   .then(() => console.log('Base synchronisée avec succès.'))
   .catch(error => console.error('Erreur de synchronisation :', error));
 
-// Lancement du serveur
+  app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] Requête reçue : ${req.method} ${req.url}`);
+    next();
+});
+
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`API lancée sur http://localhost:${PORT}`);
